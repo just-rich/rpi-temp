@@ -1,0 +1,5 @@
+__pycache__
+backups
+cpu_temp_data.txt
+cpu_temp.html
+test.py
