@@ -5,6 +5,7 @@ from bokeh.models import Title, DatetimeTickFormatter, SingleIntervalTicker, Ran
 from bokeh.models import FixedTicker
 import pytz
 from datetime import datetime, timedelta
+import os
 
 cpu = CPUTemperature()
 
@@ -77,6 +78,18 @@ def graph(temp):
     # Save the data to file
     with open("cpu_temp_data.txt", "a") as file:
         file.write(f"{int(now.timestamp())},{temp}\n")
+
+    # Remove data points older than 24 hours from the file
+    cutoff_time = now - timedelta(hours=24)
+    with open("cpu_temp_data.txt", "r+") as file:
+        lines = file.readlines()
+        file.seek(0)
+        for line in lines:
+            timestamp_str, _ = line.strip().split(",")
+            timestamp = datetime.fromtimestamp(int(timestamp_str), timezone)
+            if timestamp > cutoff_time:
+                file.write(line)
+        file.truncate()
 
     # limit the number of data points displayed on the chart
     if len(x) > max_data_points:
